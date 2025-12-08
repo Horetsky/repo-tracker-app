@@ -2,11 +2,12 @@
   "name": "web",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "pnpm lint && next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "pnpm dlx eslint"
   },
   "dependencies": {
     "next": "16.0.7",
@@ -14,11 +15,11 @@
     "react-dom": "19.2.0"
   },
   "devDependencies": {
+    "@next/eslint-plugin-next": "^16.0.7",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
-    "eslint-config-next": "16.0.7",
     "typescript": "^5"
   }
 }
