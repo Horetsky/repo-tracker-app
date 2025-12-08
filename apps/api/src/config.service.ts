@@ -15,6 +15,9 @@ const environmentVariables = [
 
     // Authentification
     "JWT_SECRET",
+
+    // Providers
+    "GITHUB_API_KEY",
 ] as const;
 
 @Injectable()
