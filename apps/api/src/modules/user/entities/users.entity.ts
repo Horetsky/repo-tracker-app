@@ -1,5 +1,6 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Exclude } from "class-transformer";
+import { ProjectsEntity } from "@/modules/project/entities";
 
 @Entity("users")
 export class UsersEntity {
@@ -15,4 +16,7 @@ export class UsersEntity {
 
     @CreateDateColumn({ type: "timestamp" })
     createdAt: Date;
+
+    @OneToMany(() => ProjectsEntity, project => project.user)
+    projects: ProjectsEntity[];
 }

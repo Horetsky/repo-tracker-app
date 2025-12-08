@@ -6,12 +6,14 @@ import { ConfigModule } from "@/config.module";
 import modules from "@/modules";
 import { APP_GUARD } from "@nestjs/core";
 import { AccessTokenGuard } from "@/modules/auth/guards";
+import { ProjectModule } from './modules/project/project.module';
 
 @Module({
     imports: [
         ConfigModule,
         TypeOrmModule.forRootAsync(dbConfig.masterConnection.provider),
         ...modules,
+        ProjectModule,
     ],
     controllers: [AppController],
     providers: [

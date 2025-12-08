@@ -6,16 +6,12 @@ export class GithubRepoResponseDto {
     owner: GithubRepoOwner;
 
     forks: number;
-    forks_count: string;
+    forks_count: number;
     open_issues: number;
     open_issues_count: number;
     stargazers_count: number;
 
     created_at: Date;
-
-    constructor(input: GithubRepoResponseDto) {
-        Object.assign(this, input);
-    }
 }
 
 export class GithubRepoOwner {
