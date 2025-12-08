@@ -1,0 +1,18 @@
+services:
+  postgres:
+    container_name: repo-tracker-db
+    restart: always
+    image: postgres:16-alpine
+    env_file:
+      - .env.postgres
+    volumes:
+      - repo-tracker-postgres-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+networks:
+  data-net:
+    driver: bridge
+
+volumes:
+  repo-tracker-postgres-data:
