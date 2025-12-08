@@ -12,6 +12,9 @@ const environmentVariables = [
     "DB_USER",
     "DB_PASSWORD",
     "DB_NAME",
+
+    // Authentification
+    "JWT_SECRET",
 ] as const;
 
 @Injectable()
