@@ -1,42 +1,48 @@
-import { BadRequestException, ConflictException, Injectable, NotFoundException } from "@nestjs/common";
+import { ConflictException, Injectable, NotFoundException } from "@nestjs/common";
 import { AddProjectDto, GetProjectDto } from "@/modules/project/dto";
-import { GithubService } from "@/infrastructure/github/services";
 import { InjectRepository } from "@nestjs/typeorm";
-import { ProjectsEntity } from "@/modules/project/entities";
+import { ProjectsEntity, ProjectSyncStatus } from "@/modules/project/entities";
 import { Repository } from "typeorm";
 import { ResponseWithPaginationDto } from "@/dtos";
-import { githubRepoResponseToProjectsEntity } from "@/infrastructure/github/mappers";
+import { ProjectsSyncQueueProducer } from "@/modules/project/queue";
 
 @Injectable()
 export class ProjectService {
     constructor(
-        private readonly githubService: GithubService,
         @InjectRepository(ProjectsEntity)
         private readonly projectsRepository: Repository<ProjectsEntity>,
+        private readonly projectsSyncQueue: ProjectsSyncQueueProducer,
     ) {}
 
     async create(userId: string, input: AddProjectDto) {
+        const { owner, name } = input;
+
         const exists = await this.projectsRepository.exists({
-            where: {
-                owner: input.owner,
-                name: input.repo,
-            },
+            where: { owner, name },
         });
 
         if(exists) throw new ConflictException();
 
-        const repo = await this.githubService.getRepo({
-            owner: input.owner,
-            repo: input.repo,
+        const project = this.projectsRepository.create({
+            userId,
+            name,
+            url: `https://github.com/${owner}/${name}`,
+            owner,
         });
 
-        if(!repo) throw new BadRequestException();
+        const dbProject = await this.projectsRepository.save(project);
 
-        const project = this.projectsRepository.create(
-            githubRepoResponseToProjectsEntity(repo, userId),
-        );
+        await this.projectsSyncQueue.push(dbProject);
 
-        return this.projectsRepository.save(project);
+        return dbProject;
+    }
+
+    async findById(id: string, userId: string): Promise<ProjectsEntity> {
+        const dbProject = await this.projectsRepository.findOne({ where: { id, userId } });
+
+        if(!dbProject) throw new NotFoundException();
+
+        return dbProject;
     }
 
     async findAllByUserId(userId: string, params: GetProjectDto = {}): Promise<ResponseWithPaginationDto<ProjectsEntity[]>> {
@@ -68,17 +74,9 @@ export class ProjectService {
 
         if(!dbProject) throw new NotFoundException();
 
-        const repo = await this.githubService.getRepo({
-            owner: dbProject.owner,
-            repo: dbProject.name,
-        });
+        await this.projectsRepository.update(id, { syncStatus: ProjectSyncStatus.PENDING });
+        await this.projectsSyncQueue.push(dbProject);
 
-        if(!repo) throw new BadRequestException();
-
-        await this.projectsRepository.update(
-            id,
-            githubRepoResponseToProjectsEntity(repo, userId),
-        );
         return true;
     }
 }

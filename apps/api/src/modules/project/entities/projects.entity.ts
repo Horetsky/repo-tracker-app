@@ -1,5 +1,11 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
 import { UsersEntity } from "@/modules/user/entities";
+
+export enum ProjectSyncStatus {
+    PENDING = "PENDING",
+    SYNCED = "SYNCED",
+    ERROR = "ERROR",
+}
 
 @Entity("projects")
 export class ProjectsEntity {
@@ -33,7 +39,14 @@ export class ProjectsEntity {
     @Column({ default: 0 })
     issues: number;
 
-    @Column({ nullable: true })
+    @Column({
+        type: "enum",
+        enum: ProjectSyncStatus,
+        default: ProjectSyncStatus.PENDING,
+    })
+    syncStatus: ProjectSyncStatus;
+
+    @PrimaryColumn()
     userId: string;
     @JoinColumn({ name: "userId" })
     @ManyToOne(() => UsersEntity, user => user.projects, { onDelete: "CASCADE" })

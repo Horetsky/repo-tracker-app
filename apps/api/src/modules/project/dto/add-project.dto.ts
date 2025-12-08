@@ -7,5 +7,5 @@ export class AddProjectDto {
 
     @IsString()
     @IsNotEmpty()
-    repo: string;
+    name: string;
 }

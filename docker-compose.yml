@@ -10,9 +10,19 @@ services:
     ports:
       - "5432:5432"
 
+  redis:
+    container_name: repo-tracker-redis
+    restart: always
+    image: redis/redis-stack-server:latest
+    ports:
+      - "6379:6379"
+    volumes:
+      - repo-tracker-redis-data:/data
+
 networks:
   data-net:
     driver: bridge
 
 volumes:
   repo-tracker-postgres-data:
+  repo-tracker-redis-data:

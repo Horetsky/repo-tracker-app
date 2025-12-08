@@ -1,9 +1,9 @@
 import { GithubRepoResponseDto } from "@/infrastructure/github/dto";
 import { ProjectsEntity } from "@/modules/project/entities";
+import { DeepPartial } from "typeorm";
 
-export function githubRepoResponseToProjectsEntity(response: GithubRepoResponseDto, userId: string): Omit<ProjectsEntity, "id"> {
+export function githubRepoResponseToProjectsEntity(response: GithubRepoResponseDto): DeepPartial<ProjectsEntity> {
     return {
-        userId,
         name: response.name,
         url: response.html_url,
         stars: response.stargazers_count,

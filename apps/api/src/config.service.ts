@@ -13,6 +13,10 @@ const environmentVariables = [
     "DB_PASSWORD",
     "DB_NAME",
 
+    // Redis
+    "REDIS_HOST",
+    "REDIS_PORT",
+
     // Authentification
     "JWT_SECRET",
 

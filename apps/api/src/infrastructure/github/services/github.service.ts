@@ -16,7 +16,7 @@ export class GithubService {
 
     async getRepo(input: GetGithubRepoDto): Promise<GithubRepoResponseDto | null> {
         try {
-            const requestUrl = this.config.baseUrl + `/repos/${input.owner}/${input.repo}`;
+            const requestUrl = this.config.baseUrl + `/repos/${input.owner}/${input.name}`;
 
             const response$ = this.httpService.get<GithubRepoResponseDto>(
                 requestUrl,

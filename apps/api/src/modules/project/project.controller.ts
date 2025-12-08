@@ -28,6 +28,14 @@ export class ProjectController {
         return this.projectService.findAllByUserId(session.user.id, params);
     }
 
+    @Get(":id")
+    getProject(
+        @Param("id") id: string,
+        @Session() session: ServerSession,
+    ) {
+        return this.projectService.findById(id, session.user.id);
+    }
+
     @Post(":id/refresh")
     updateProject(
         @Param("id") id: string,
