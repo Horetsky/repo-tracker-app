@@ -2,14 +2,24 @@ import { Injectable } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { UsersEntity } from "@/modules/user/entities";
 import { JwtTokenPayload, SessionResponseDto } from "@/modules/auth/dto";
-import { Request } from "express";
+import { CookieOptions, Request, Response } from "express";
 import { ISessionUser, ServerSession } from "@/types";
+import { ConfigService } from "@/config.service";
 
 @Injectable()
 export class TokensService {
     constructor(
         private readonly jwtService: JwtService,
+        private readonly configService: ConfigService,
     ) {}
+
+    private readonly cookieOptions: CookieOptions = {
+        httpOnly: true,
+        path: "/",
+        secure: this.configService.isProduction,
+        sameSite: "lax",
+        domain: this.configService.env("DOMAIN"),
+    };
 
     sign(user: UsersEntity): SessionResponseDto {
         const payload: JwtTokenPayload = {
@@ -41,5 +51,13 @@ export class TokensService {
                 email: payload.email,
             },
         } satisfies ServerSession<ISessionUser>;
+    }
+
+    setClientSession(response: Response, session: SessionResponseDto) {
+        response.cookie(
+            "access_token",
+            session.accessToken,
+            this.cookieOptions,
+        );
     }
 }

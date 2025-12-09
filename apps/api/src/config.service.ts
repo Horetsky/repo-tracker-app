@@ -5,6 +5,7 @@ const environmentVariables = [
     // Application
     "PORT",
     "MODE",
+    "DOMAIN",
 
     // Database
     "DB_HOST",

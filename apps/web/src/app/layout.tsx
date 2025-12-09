@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { PropsWithChildren } from "react";
+import { QueryProvider } from "@/lib/react-query";
+import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -11,9 +13,12 @@ export default function RootLayout({ children }: Readonly<PropsWithChildren>) {
     return (
         <html lang="en">
             <body>
-                <main>
-                    { children }
-                </main>
+                <QueryProvider>
+                    <main>
+                        { children }
+                    </main>
+                    <Toaster theme={"light"} position={"top-center"} />
+                </QueryProvider>
             </body>
         </html>
     );

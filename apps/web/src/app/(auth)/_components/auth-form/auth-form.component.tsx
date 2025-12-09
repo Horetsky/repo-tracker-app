@@ -1,43 +1,37 @@
 "use client";
 
 import { ComponentProps } from "react";
-import { Controller, useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { Controller } from "react-hook-form";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { z } from "zod";
+import { AuthFormSchemaValues } from "@/features/auth/auth-form.schema";
+import { useAuthForm } from "@/features/auth/hooks";
+import { cn } from "@/lib/utils";
 
-const schema = z.object({
-    email: z.email(),
-    password: z.string().min(6),
-});
-type Schema = z.infer<typeof schema>;
 
 export namespace AuthForm {
     export type Props = Omit<ComponentProps<"form">, "onSubmit"> & {
-        onSubmit: (values: Schema) => void;
+        onSubmit: (values: AuthFormSchemaValues) => void;
     };
 }
 
 export const AuthForm = ({
     onSubmit,
+    className,
+    children,
     ...props
 }: AuthForm.Props) => {
-
-    const form = useForm<Schema>({
-        resolver: zodResolver(schema),
-        defaultValues: {
-            email: "",
-            password: "",
-        },
-        mode: "onBlur",
-    });
+    const form = useAuthForm();
 
     return (
         <form
             {...props}
             id={"auth-form"}
+            className={cn(
+                "[&_button]:w-full",
+                className,
+            )}
             onSubmit={form.handleSubmit(onSubmit)}
         >
             <FieldGroup className={"mb-8"}>
@@ -88,14 +82,7 @@ export const AuthForm = ({
                     )}
                 />
             </FieldGroup>
-            <Button
-                size={"lg"}
-                type={"submit"}
-                form={"auth-form"}
-                className={"w-full"}
-            >
-                Submit
-            </Button>
+            { children }
         </form>
     );
 };

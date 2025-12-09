@@ -10,7 +10,6 @@ import { ConfigModule } from "@/config.module";
     imports: [
         UserModule,
         JwtModule.registerAsync({
-            imports: [ConfigModule],
             inject: [ConfigService],
             useFactory: (configService: ConfigService) => {
                 return {
