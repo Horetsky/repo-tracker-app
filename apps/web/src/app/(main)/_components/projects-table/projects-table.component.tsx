@@ -6,7 +6,6 @@ import {
     flexRender,
     getCoreRowModel,
     getSortedRowModel,
-    PaginationState,
     SortingState,
     Table,
     useReactTable,
@@ -16,27 +15,17 @@ import { Button } from "@/components/ui/button";
 import { Table as TableRoot, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { projectTableColumns } from "./project-table-columns";
 import { ProjectsEntity, ProjectSyncStatus } from "@/entities/project";
-import { useQuery } from "@tanstack/react-query";
-import { GetCurrentUserProjectsQuery } from "@/features/project/queries";
-import { useProjectActions } from "@/features/project/hooks";
+import { useProjectActions, useProjectTable } from "@/features/project/hooks";
 import { cn } from "@/lib/utils";
 
 export function ProjectsTable() {
     const [sorting, setSorting] = useState<SortingState>([]);
 
-    const [pagination, setPagination] = useState<PaginationState>({
-        pageIndex: 0,
-        pageSize: 10,
-    });
-
     const {
-        data: projects,
-    } = useQuery(
-        GetCurrentUserProjectsQuery({
-            page: pagination.pageIndex + 1,
-            limit: pagination.pageSize,
-        }),
-    );
+        projects,
+        pagination,
+        setPagination,
+    } = useProjectTable();
 
     const {
         isRefreshing,
@@ -47,9 +36,9 @@ export function ProjectsTable() {
     } = useProjectActions(pagination);
 
     const table = useReactTable({
-        data: projects?.data.data || [],
+        data: projects?.data || [],
         columns: projectTableColumns,
-        rowCount: projects?.data.pagination.totalItems,
+        rowCount: projects?.pagination.totalItems,
         manualPagination: true,
 
         getCoreRowModel: getCoreRowModel(),
