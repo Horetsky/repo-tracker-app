@@ -1,8 +1,10 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
-import { ArrowUpDown, RefreshCcw, Trash } from "lucide-react";
+import { ArrowUpDown, RefreshCcw, Star, Stars, Trash } from "lucide-react";
 import { ProjectsEntity } from "@/entities/project";
+import Link from "next/link";
+import Image from "next/image";
 
 export const projectTableColumns: ColumnDef<ProjectsEntity>[] = [
     {
@@ -31,15 +33,44 @@ export const projectTableColumns: ColumnDef<ProjectsEntity>[] = [
         accessorKey: "name",
         header: "Name",
         cell: ({ row }) => (
-            <div className="capitalize">{row.getValue("name")}</div>
+            <Link
+                href={row.original.url}
+                target={"_blank"}
+                className={"capitalize"}
+            >
+                {row.getValue("name")}
+            </Link>
         ),
     },
     {
         accessorKey: "owner",
         header: "Owner",
-        cell: ({ row }) => (
-            <div className="capitalize">{row.getValue("owner")}</div>
-        ),
+        cell: ({ row }) => {
+            const owner = row.original.ownerDetails;
+
+            if(owner) {
+                return (
+                    <Link
+                        href={owner.html_url}
+                        className={"capitalize flex items-center gap-1"}
+                        target={"_blank"}
+                    >
+                        <Image
+                            src={owner.avatar_url}
+                            width={30}
+                            height={30}
+                            className={"rounded-full mr-2"}
+                            alt={`${owner.login} avatar`}
+                        />
+                        { row.getValue("owner") }
+                    </Link>
+                );
+            }
+
+            return (
+                <div className={"capitalize"}>{row.getValue("owner")}</div>
+            );
+        },
     },
     {
         accessorKey: "stars",
@@ -47,7 +78,7 @@ export const projectTableColumns: ColumnDef<ProjectsEntity>[] = [
             return (
                 <Button
                     variant="ghost"
-                    className={"float-end px-0 has-[>svg]:px-0"}
+                    className={"float-end"}
                     onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 >
                     Stars
@@ -56,7 +87,7 @@ export const projectTableColumns: ColumnDef<ProjectsEntity>[] = [
             );
         },
         cell: ({ row }) => (
-            <div className="text-right font-medium px-3">{row.getValue("stars")}</div>
+            <div className="text-right px-3">{row.getValue("stars")}</div>
         ),
     },
     {
@@ -74,7 +105,7 @@ export const projectTableColumns: ColumnDef<ProjectsEntity>[] = [
             );
         },
         cell: ({ row }) => (
-            <div className="text-right font-medium px-3">{row.getValue("forks")}</div>
+            <div className="text-right px-3">{row.getValue("forks")}</div>
         ),
     },
     {
@@ -92,7 +123,7 @@ export const projectTableColumns: ColumnDef<ProjectsEntity>[] = [
             );
         },
         cell: ({ row }) => (
-            <div className="text-right font-medium px-3">{row.getValue("issues")}</div>
+            <div className="text-right px-3">{row.getValue("issues")}</div>
         ),
     },
     {

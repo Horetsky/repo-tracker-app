@@ -39,6 +39,10 @@ export class TokensService {
         return type === "Bearer" ? token : undefined;
     }
 
+    extractFromCookie(request: Request): string | undefined {
+        return request.cookies["access_token"];
+    }
+
     verify(token: string): Promise<JwtTokenPayload> {
         return this.jwtService.verifyAsync(token);
     }

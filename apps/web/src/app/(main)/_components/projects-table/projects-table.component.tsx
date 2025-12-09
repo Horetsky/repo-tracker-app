@@ -20,12 +20,20 @@ import {
 import { useState } from "react";
 import { projectTableColumns } from "./project-table-columns";
 import { ProjectsEntity } from "@/entities/project";
+import { useQuery } from "@tanstack/react-query";
+import { GetCurrentUserProjectsQuery } from "@/features/project/queries";
 
 export function ProjectsTable() {
     const [sorting, setSorting] = useState<SortingState>([]);
 
+    const {
+        data: projects,
+    } = useQuery(GetCurrentUserProjectsQuery());
+
+    console.log(projects?.data.data);
+
     const table = useReactTable({
-        data: [],
+        data: projects?.data.data || [],
         columns: projectTableColumns,
         getCoreRowModel: getCoreRowModel(),
         getSortedRowModel: getSortedRowModel(),

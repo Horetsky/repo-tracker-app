@@ -3,11 +3,14 @@ import { AppModule } from "./app.module";
 import { ConfigService } from "@/config.service";
 import { ClassSerializerInterceptor, ValidationPipe } from "@nestjs/common";
 import corsConfig from "@/config/cors.config";
+import cookieParser from "cookie-parser";
 
 async function bootstrap() {
     const config = new ConfigService();
 
     const app = await NestFactory.create(AppModule);
+
+    app.use(cookieParser());
 
     app.enableCors(corsConfig);
 

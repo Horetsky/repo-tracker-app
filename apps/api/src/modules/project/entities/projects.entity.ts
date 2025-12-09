@@ -46,7 +46,7 @@ export class ProjectsEntity {
     })
     syncStatus: ProjectSyncStatus;
 
-    @PrimaryColumn()
+    @Column()
     userId: string;
     @JoinColumn({ name: "userId" })
     @ManyToOne(() => UsersEntity, user => user.projects, { onDelete: "CASCADE" })

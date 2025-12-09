@@ -21,7 +21,7 @@ export class AccessTokenGuard implements CanActivate {
         const request = context.switchToHttp().getRequest();
 
         try {
-            const token = this.tokensService.extractFromHeaderAsBearer(request);
+            const token = this.tokensService.extractFromCookie(request);
             if(!token) throw new UnauthorizedException();
 
             const validToken = await this.tokensService.verify(token);

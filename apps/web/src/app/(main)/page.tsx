@@ -1,6 +1,4 @@
-import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
-import { ProjectsTable } from "@/app/(main)/_components";
+import { AddProjectForm, ProjectsTable } from "@/app/(main)/_components";
 
 export default function Page() {
     return (
@@ -9,11 +7,7 @@ export default function Page() {
                 <h1 className={"text-5xl font-bold mb-2"}>
                     Projects 🧭
                 </h1>
-                <Button
-                    size={"lg"}
-                >
-                    <Plus /> Add New
-                </Button>
+                <AddProjectForm />
             </div>
             <div className={"flex-1"}>
                 <ProjectsTable />
