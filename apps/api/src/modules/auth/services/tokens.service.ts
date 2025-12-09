@@ -5,6 +5,7 @@ import { JwtTokenPayload, SessionResponseDto } from "@/modules/auth/dto";
 import { CookieOptions, Request, Response } from "express";
 import { ISessionUser, ServerSession } from "@/types";
 import { ConfigService } from "@/config.service";
+import authConfig from "@/modules/auth/auth.config";
 
 @Injectable()
 export class TokensService {
@@ -40,7 +41,7 @@ export class TokensService {
     }
 
     extractFromCookie(request: Request): string | undefined {
-        return request.cookies["access_token"];
+        return request.cookies[authConfig.accessToken.cookieKey];
     }
 
     verify(token: string): Promise<JwtTokenPayload> {
@@ -59,8 +60,15 @@ export class TokensService {
 
     setClientSession(response: Response, session: SessionResponseDto) {
         response.cookie(
-            "access_token",
+            authConfig.accessToken.cookieKey,
             session.accessToken,
+            this.cookieOptions,
+        );
+    }
+
+    clearClientSession(response: Response) {
+        response.clearCookie(
+            authConfig.accessToken.cookieKey,
             this.cookieOptions,
         );
     }

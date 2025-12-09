@@ -1,4 +1,4 @@
-import { AddProjectForm, ProjectsTable } from "@/app/(main)/_components";
+import { AddProjectForm, LogoutButton, ProjectsTable } from "@/app/(main)/_components";
 
 export default function Page() {
     return (
@@ -7,7 +7,10 @@ export default function Page() {
                 <h1 className={"text-5xl font-bold mb-2"}>
                     Projects 🧭
                 </h1>
-                <AddProjectForm />
+                <div className={"flex gap-4"}>
+                    <AddProjectForm />
+                    <LogoutButton />
+                </div>
             </div>
             <div className={"flex-1"}>
                 <ProjectsTable />

@@ -4,18 +4,20 @@ import { AuthFormSchemaValues } from "@/features/auth/auth-form.schema";
 import { toast } from "sonner";
 import { getErrorMessage } from "@/lib/axios/utils";
 import { useSessionStore } from "@/features/session/session.store";
+import { useRouter } from "next/navigation";
 
 export function useLogin() {
+    const router = useRouter();
     const sessionStore = useSessionStore();
 
     const loginMutation = useMutation({
         ...LoginMutation,
         onSuccess: ({ data }) => {
-            toast.success("Login Successful");
             sessionStore.setSession({
                 sub: data.payload.sub,
                 email: data.payload.email,
             });
+            router.replace("/");
         },
         onError: (error) => {
             toast.error("Login Failed", {

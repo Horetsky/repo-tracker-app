@@ -32,4 +32,12 @@ export class AuthController {
         this.tokensService.setClientSession(response, session);
         return session;
     }
+
+    @Post("logout")
+    logout(
+        @Res({ passthrough: true }) response: Response,
+    ) {
+        this.tokensService.clearClientSession(response);
+        return true;
+    }
 }
