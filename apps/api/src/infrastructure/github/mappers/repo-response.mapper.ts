@@ -17,5 +17,6 @@ export function githubRepoResponseToProjectsEntity(response: GithubRepoResponseD
             avatar_url: response.owner.avatar_url,
             html_url: response.owner.html_url,
         },
+        githubCreatedAt: new Date(response.created_at),
     };
 }

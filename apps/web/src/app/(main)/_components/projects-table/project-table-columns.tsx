@@ -117,6 +117,34 @@ export const projectTableColumns: ColumnDef<ProjectsEntity>[] = [
         ),
     },
     {
+        accessorKey: "githubCreatedAt",
+        header: ({ column }) => {
+            return (
+                <Button
+                    variant="ghost"
+                    className={"float-end"}
+                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                >
+                    Created At
+                    <ArrowUpDown />
+                </Button>
+            );
+        },
+        cell: ({ row }) => {
+            const value = row.getValue("githubCreatedAt") as string | null;
+
+            let unix: string = "-";
+
+            if(value) {
+                unix = Math.floor(new Date(value).getTime() / 1000).toString();
+            }
+
+            return (
+                <div className="text-right px-3">{ unix }</div>
+            );
+        },
+    },
+    {
         id: "actions",
         header: () => {
             return (

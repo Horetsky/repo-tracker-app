@@ -15,6 +15,7 @@ export type ProjectsEntity = {
     stars: number;
     forks: number;
     issues: number;
+    githubCreatedAt: Date;
     syncStatus: ProjectSyncStatus;
     userId: string;
     user: UsersEntity;

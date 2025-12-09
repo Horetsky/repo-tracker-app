@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { UsersEntity } from "@/modules/user/entities";
 
 export enum ProjectSyncStatus {
@@ -38,6 +38,9 @@ export class ProjectsEntity {
 
     @Column({ default: 0 })
     issues: number;
+
+    @Column({ type: "timestamp", nullable: true })
+    githubCreatedAt: Date | null;
 
     @Column({
         type: "enum",
