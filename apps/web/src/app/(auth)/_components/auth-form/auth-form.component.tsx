@@ -4,11 +4,9 @@ import { ComponentProps } from "react";
 import { Controller } from "react-hook-form";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { AuthFormSchemaValues } from "@/features/auth/auth-form.schema";
 import { useAuthForm } from "@/features/auth/hooks";
 import { cn } from "@/lib/utils";
-
 
 export namespace AuthForm {
     export type Props = Omit<ComponentProps<"form">, "onSubmit"> & {
