@@ -5,6 +5,7 @@ import { ProjectsEntity, ProjectSyncStatus } from "@/modules/project/entities";
 import { Repository } from "typeorm";
 import { ResponseWithPaginationDto } from "@/dtos";
 import { ProjectsSyncQueueProducer } from "@/modules/project/queue";
+import { addProjectDtoToProjectsEntity } from "@/modules/project/mappers";
 
 @Injectable()
 export class ProjectService {
@@ -23,18 +24,25 @@ export class ProjectService {
 
         if(exists) throw new ConflictException();
 
-        const project = this.projectsRepository.create({
-            userId,
-            name,
-            url: `https://github.com/${owner}/${name}`,
-            owner,
-        });
+        const project = this.projectsRepository.create(addProjectDtoToProjectsEntity(input, userId));
 
         const dbProject = await this.projectsRepository.save(project);
 
         await this.projectsSyncQueue.push(dbProject);
 
         return dbProject;
+    }
+
+    async createMany(userId: string, input: AddProjectDto[]) {
+        const projects = this.projectsRepository.create(
+            input.map(project => addProjectDtoToProjectsEntity(project, userId)),
+        );
+
+        const dbProjects = await this.projectsRepository.save(projects);
+
+        await this.projectsSyncQueue.pushBatch(dbProjects);
+
+        return dbProjects;
     }
 
     async findById(id: string, userId: string): Promise<ProjectsEntity> {

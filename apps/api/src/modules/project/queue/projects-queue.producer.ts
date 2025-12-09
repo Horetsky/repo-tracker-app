@@ -13,11 +13,26 @@ export class ProjectsSyncQueueProducer implements IQueueProducer {
     ) {}
 
     push(project: ProjectsEntity) {
-        const payload: ProjectSyncQueueDto = {
+        return this.queue.add(
+            projectsQueueConfig.githubSync.name,
+            this.getPayload(project),
+        );
+    }
+
+    pushBatch(payload: ProjectsEntity[]) {
+        return this.queue.addBulk(
+            payload.map(item => ({
+                name: projectsQueueConfig.githubSync.name,
+                data: this.getPayload(item),
+            })),
+        );
+    }
+
+    private getPayload(project: ProjectsEntity): ProjectSyncQueueDto {
+        return {
             projectId: project.id,
             owner: project.owner,
             name: project.name,
         };
-        return this.queue.add(projectsQueueConfig.githubSync.name, payload);
     }
 }

@@ -1,0 +1,22 @@
+[
+  "facebook/react",
+  "vercel/next.js",
+  "nestjs/nest",
+  "microsoft/TypeScript",
+  "vuejs/vue",
+  "angular/angular",
+  "docker/cli",
+  "kubernetes/kubernetes",
+  "golang/go",
+  "rust-lang/rust",
+  "torvalds/linux",
+  "axios/axios",
+  "typeorm/typeorm",
+  "redis/redis",
+  "tensorflow/tensorflow",
+  "pytorch/pytorch",
+  "airbnb/javascript",
+  "prettier/prettier",
+  "vitejs/vite",
+  "grafana/grafana"
+]

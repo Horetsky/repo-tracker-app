@@ -7,4 +7,5 @@ export interface IQueueConfig extends RegisterQueueOptions {
 
 export interface IQueueProducer {
     push(payload: unknown): Promise<Job<any, any, string>>;
+    pushBatch(payload: unknown[]): Promise<Job<any, any, string>[]>;
 }

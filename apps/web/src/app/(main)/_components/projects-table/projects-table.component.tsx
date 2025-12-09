@@ -30,8 +30,6 @@ export function ProjectsTable() {
         data: projects,
     } = useQuery(GetCurrentUserProjectsQuery());
 
-    console.log(projects?.data.data);
-
     const table = useReactTable({
         data: projects?.data.data || [],
         columns: projectTableColumns,

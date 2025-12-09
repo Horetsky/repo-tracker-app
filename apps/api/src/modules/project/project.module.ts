@@ -27,5 +27,6 @@ import { projectsQueueConfig, ProjectsSyncQueueProcessor, ProjectsSyncQueueProdu
         ProjectsSyncQueueProducer,
         ProjectsSyncQueueProcessor,
     ],
+    exports: [ProjectService],
 })
 export class ProjectModule {}
