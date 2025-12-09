@@ -11,7 +11,9 @@ export default function RootLayout({ children }: Readonly<PropsWithChildren>) {
     return (
         <html lang="en">
             <body>
-                {children}
+                <main>
+                    { children }
+                </main>
             </body>
         </html>
     );
