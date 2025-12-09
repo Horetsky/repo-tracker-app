@@ -1,11 +1,10 @@
 import { ColumnDef, RowData } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
-import { ArrowUpDown, RefreshCcw, Trash } from "lucide-react";
+import { ArrowUpDown } from "lucide-react";
 import { ProjectsEntity, ProjectSyncStatus } from "@/entities/project";
 import Link from "next/link";
 import Image from "next/image";
-import { cn } from "@/lib/utils";
-import { Spinner } from "@/components/ui/spinner";
+import { ProjectTableActions } from "./project-table-actions";
 
 declare module "@tanstack/react-table" {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -160,28 +159,12 @@ export const projectTableColumns: ColumnDef<ProjectsEntity>[] = [
             const isDeleting = table.options.meta?.isDeleting(projectId) || false;
 
             return (
-                <div className={"float-end flex items-center gap-2"}>
-                    <Button
-                        size={"icon"}
-                        variant={"outline"}
-                        onClick={() => handleRefresh?.(projectId)}
-                    >
-                        <RefreshCcw
-                            className={cn(
-                                isRefreshing && "animate-spin",
-                            )} 
-                        />
-                    </Button>
-                    <Button
-                        size={"icon"}
-                        variant={"destructive"}
-                        onClick={() => handleDelete?.(projectId)}
-                    >
-                        {
-                            isDeleting ? <Spinner /> : <Trash />
-                        }
-                    </Button>
-                </div>
+                <ProjectTableActions
+                    isRefreshing={isRefreshing}
+                    isDeleting={isDeleting}
+                    onRefresh={() => handleRefresh?.(projectId)}
+                    onDelete={() => handleDelete?.(projectId)}
+                />
             );
         },
     },

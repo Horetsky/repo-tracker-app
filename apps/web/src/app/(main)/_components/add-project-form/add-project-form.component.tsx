@@ -55,7 +55,7 @@ export const AddProjectForm = ({
                             done.
                         </DialogDescription>
                     </DialogHeader>
-                    <FieldGroup className={"mb-8"}>
+                    <FieldGroup>
                         <Controller
                             name={"path"}
                             control={form.control}
