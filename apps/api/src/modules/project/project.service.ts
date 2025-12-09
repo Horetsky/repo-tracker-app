@@ -19,7 +19,7 @@ export class ProjectService {
         const { owner, name } = input;
 
         const exists = await this.projectsRepository.exists({
-            where: { owner, name },
+            where: { owner, name, userId },
         });
 
         if(exists) throw new ConflictException();
