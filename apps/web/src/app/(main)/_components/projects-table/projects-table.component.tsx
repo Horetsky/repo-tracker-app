@@ -5,7 +5,10 @@ import {
     Table,
     flexRender,
     getCoreRowModel,
-    useReactTable, SortingState, getSortedRowModel, getPaginationRowModel,
+    getSortedRowModel,
+    useReactTable,
+    SortingState,
+    PaginationState,
 } from "@tanstack/react-table";
 
 import { Button } from "@/components/ui/button";
@@ -26,21 +29,35 @@ import { GetCurrentUserProjectsQuery } from "@/features/project/queries";
 export function ProjectsTable() {
     const [sorting, setSorting] = useState<SortingState>([]);
 
+    const [pagination, setPagination] = useState<PaginationState>({
+        pageIndex: 0,
+        pageSize: 10,
+    });
+
     const {
         data: projects,
-    } = useQuery(GetCurrentUserProjectsQuery());
+    } = useQuery(
+        GetCurrentUserProjectsQuery({
+            page: pagination.pageIndex + 1,
+            limit: pagination.pageSize,
+        }),
+    );
 
     const table = useReactTable({
         data: projects?.data.data || [],
         columns: projectTableColumns,
+        rowCount: projects?.data.pagination.totalItems,
+        manualPagination: true,
+
         getCoreRowModel: getCoreRowModel(),
         getSortedRowModel: getSortedRowModel(),
-        getPaginationRowModel: getPaginationRowModel(),
 
         onSortingChange: setSorting,
+        onPaginationChange: setPagination,
 
         state: {
             sorting,
+            pagination,
         },
     });
 
@@ -53,9 +70,9 @@ export function ProjectsTable() {
                 </TableRoot>
             </div>
             <div className="flex items-center justify-end space-x-2 py-4">
-                <div className="text-muted-foreground flex-1 text-sm">
-                    {table.getFilteredSelectedRowModel().rows.length} of{" "}
-                    {table.getFilteredRowModel().rows.length} row(s) selected.
+                <div className="flex-1 text-sm text-muted-foreground">
+                    Page {table.getState().pagination.pageIndex + 1} of{" "}
+                    {table.getPageCount()}
                 </div>
                 <div className="space-x-2">
                     <Button
