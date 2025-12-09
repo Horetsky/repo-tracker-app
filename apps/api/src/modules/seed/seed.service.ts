@@ -32,6 +32,12 @@ export class SeedService implements OnModuleInit {
     }
 
     async seedProjects(userId: string) {
+        const userProjects = await this.projectService.findAllByUserId(userId);
+        if(userProjects.data.length > 0) {
+            this.logger.log("Projects already seeded. Skipping.");
+            return userProjects.data;
+        }
+
         this.logger.log("Seeding projects...");
         const dbProjects = await this.projectService.createMany(
             userId,

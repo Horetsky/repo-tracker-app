@@ -1,34 +1,24 @@
-import { ColumnDef } from "@tanstack/react-table";
-import { Checkbox } from "@/components/ui/checkbox";
+import { ColumnDef, RowData } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
-import { ArrowUpDown, RefreshCcw, Star, Stars, Trash } from "lucide-react";
-import { ProjectsEntity } from "@/entities/project";
+import { ArrowUpDown, RefreshCcw, Trash } from "lucide-react";
+import { ProjectsEntity, ProjectSyncStatus } from "@/entities/project";
 import Link from "next/link";
 import Image from "next/image";
+import { cn } from "@/lib/utils";
+import { Spinner } from "@/components/ui/spinner";
+
+declare module "@tanstack/react-table" {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    interface TableMeta<TData extends RowData> {
+        isRefreshing: (id: string) => boolean;
+        handleRefreshProject: (id: string) => void;
+
+        isDeleting: (id: string) => boolean;
+        handleDeleteProject: (id: string) => void;
+    }
+}
 
 export const projectTableColumns: ColumnDef<ProjectsEntity>[] = [
-    {
-        id: "select",
-        header: ({ table }) => (
-            <Checkbox
-                checked={
-                    table.getIsAllPageRowsSelected() ||
-                    (table.getIsSomePageRowsSelected() && "indeterminate")
-                }
-                onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-                aria-label="Select all"
-            />
-        ),
-        cell: ({ row }) => (
-            <Checkbox
-                checked={row.getIsSelected()}
-                onCheckedChange={(value) => row.toggleSelected(!!value)}
-                aria-label="Select row"
-            />
-        ),
-        enableSorting: false,
-        enableHiding: false,
-    },
     {
         accessorKey: "name",
         header: "Name",
@@ -133,21 +123,38 @@ export const projectTableColumns: ColumnDef<ProjectsEntity>[] = [
                 <div className={"text-right"}>Actions</div>
             );
         },
-        cell: () => (
-            <div className={"float-end flex items-center gap-2"}>
-                <Button
-                    size={"icon"}
-                    variant={"outline"}
-                >
-                    <RefreshCcw />
-                </Button>
-                <Button
-                    size={"icon"}
-                    variant={"destructive"}
-                >
-                    <Trash />
-                </Button>
-            </div>
-        ),
+        cell: ({ row, table }) => {
+            const projectId = row.original.id;
+            const handleRefresh = table.options.meta?.handleRefreshProject;
+            const isRefreshing = table.options.meta?.isRefreshing(projectId) || row.original.syncStatus === ProjectSyncStatus.PENDING;
+
+            const handleDelete = table.options.meta?.handleDeleteProject;
+            const isDeleting = table.options.meta?.isDeleting(projectId) || false;
+
+            return (
+                <div className={"float-end flex items-center gap-2"}>
+                    <Button
+                        size={"icon"}
+                        variant={"outline"}
+                        onClick={() => handleRefresh?.(projectId)}
+                    >
+                        <RefreshCcw
+                            className={cn(
+                                isRefreshing && "animate-spin",
+                            )} 
+                        />
+                    </Button>
+                    <Button
+                        size={"icon"}
+                        variant={"destructive"}
+                        onClick={() => handleDelete?.(projectId)}
+                    >
+                        {
+                            isDeleting ? <Spinner /> : <Trash />
+                        }
+                    </Button>
+                </div>
+            );
+        },
     },
 ];

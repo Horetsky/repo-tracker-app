@@ -1,30 +1,25 @@
 "use client";
 
 import * as React from "react";
+import { useState } from "react";
 import {
-    Table,
     flexRender,
     getCoreRowModel,
     getSortedRowModel,
-    useReactTable,
-    SortingState,
     PaginationState,
+    SortingState,
+    Table,
+    useReactTable,
 } from "@tanstack/react-table";
 
 import { Button } from "@/components/ui/button";
-import {
-    Table as TableRoot,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table";
-import { useState } from "react";
+import { Table as TableRoot, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { projectTableColumns } from "./project-table-columns";
-import { ProjectsEntity } from "@/entities/project";
+import { ProjectsEntity, ProjectSyncStatus } from "@/entities/project";
 import { useQuery } from "@tanstack/react-query";
 import { GetCurrentUserProjectsQuery } from "@/features/project/queries";
+import { useProjectActions } from "@/features/project/hooks";
+import { cn } from "@/lib/utils";
 
 export function ProjectsTable() {
     const [sorting, setSorting] = useState<SortingState>([]);
@@ -43,6 +38,14 @@ export function ProjectsTable() {
         }),
     );
 
+    const {
+        isRefreshing,
+        handleRefreshProject,
+
+        isDeleting,
+        handleDeleteProject,
+    } = useProjectActions(pagination);
+
     const table = useReactTable({
         data: projects?.data.data || [],
         columns: projectTableColumns,
@@ -58,6 +61,14 @@ export function ProjectsTable() {
         state: {
             sorting,
             pagination,
+        },
+
+        meta: {
+            isRefreshing,
+            handleRefreshProject,
+
+            isDeleting,
+            handleDeleteProject,
         },
     });
 
@@ -135,6 +146,9 @@ const Body = (table: Table<ProjectsEntity>) => {
                         <TableRow
                             key={row.id}
                             data-state={row.getIsSelected() && "selected"}
+                            className={cn(
+                                row.original.syncStatus === ProjectSyncStatus.PENDING && "opacity-50 pointer-events-none",
+                            )}
                         >
                             {
                                 row.getVisibleCells().map((cell) => (
