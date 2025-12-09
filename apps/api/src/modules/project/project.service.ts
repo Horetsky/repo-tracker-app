@@ -65,7 +65,11 @@ export class ProjectService {
             where: { userId },
             skip,
             take: limit,
+            order: {
+                createdAt: "DESC",
+            },
         });
+
 
         return new ResponseWithPaginationDto(projects, { page, limit, total });
     }

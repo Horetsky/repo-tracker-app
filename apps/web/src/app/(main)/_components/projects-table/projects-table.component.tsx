@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Table as TableRoot, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { projectTableColumns } from "./project-table-columns";
 import { ProjectsEntity, ProjectSyncStatus } from "@/entities/project";
-import { useProjectActions, useProjectTable } from "@/features/project/hooks";
+import { useProjectDelete, useProjectRefresh, useProjectTable } from "@/features/project/hooks";
 import { cn } from "@/lib/utils";
 
 export function ProjectsTable() {
@@ -27,13 +27,8 @@ export function ProjectsTable() {
         setPagination,
     } = useProjectTable();
 
-    const {
-        isRefreshing,
-        handleRefreshProject,
-
-        isDeleting,
-        handleDeleteProject,
-    } = useProjectActions(pagination);
+    const { isDeleting, handleDeleteProject } = useProjectDelete();
+    const { isRefreshing, handleRefreshProject } = useProjectRefresh();
 
     const table = useReactTable({
         data: projects?.data || [],
@@ -131,28 +126,32 @@ const Body = (table: Table<ProjectsEntity>) => {
         <TableBody>
             {
                 table.getRowModel().rows?.length ? (
-                    table.getRowModel().rows.map((row) => (
-                        <TableRow
-                            key={row.id}
-                            data-state={row.getIsSelected() && "selected"}
-                            className={cn(
-                                row.original.syncStatus === ProjectSyncStatus.PENDING && "opacity-50 pointer-events-none",
-                            )}
-                        >
-                            {
-                                row.getVisibleCells().map((cell) => (
-                                    <TableCell key={cell.id}>
-                                        {
-                                            flexRender(
-                                                cell.column.columnDef.cell,
-                                                cell.getContext(),
-                                            )
-                                        }
-                                    </TableCell>
-                                ))
-                            }
-                        </TableRow>
-                    ))
+                    table.getRowModel().rows.map((row) => {
+                        const { syncStatus } = row.original;
+                        return (
+                            <TableRow
+                                key={row.id}
+                                data-state={row.getIsSelected() && "selected"}
+                                className={cn(
+                                    syncStatus === ProjectSyncStatus.PENDING && "opacity-50 pointer-events-none",
+                                    syncStatus === ProjectSyncStatus.ERROR && "bg-red-100 hover:bg-red-200",
+                                )}
+                            >
+                                {
+                                    row.getVisibleCells().map((cell) => (
+                                        <TableCell key={cell.id}>
+                                            {
+                                                flexRender(
+                                                    cell.column.columnDef.cell,
+                                                    cell.getContext(),
+                                                )
+                                            }
+                                        </TableCell>
+                                    ))
+                                }
+                            </TableRow>
+                        );
+                    })
                 ) : (
                     <TableRow>
                         <TableCell

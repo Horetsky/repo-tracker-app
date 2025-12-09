@@ -5,8 +5,11 @@ import { useMutation } from "@tanstack/react-query";
 import { AddProjectMutation } from "@/features/project/queries";
 import { toast } from "sonner";
 import { getErrorMessage } from "@/lib/axios/utils";
+import { useState } from "react";
 
 export function useAddProjectForm() {
+    const [open, setOpen] = useState(false);
+    
     const form = useForm({
         resolver: zodResolver(addProjectFormSchema),
         defaultValues: {
@@ -16,6 +19,10 @@ export function useAddProjectForm() {
 
     const addProjectMutation = useMutation({
         ...AddProjectMutation,
+        onSettled: () => {
+            form.reset();
+            setOpen(false);
+        },
         onError: (error) => {
             toast.error("Failed to add project", {
                 description: getErrorMessage(error),
@@ -29,7 +36,11 @@ export function useAddProjectForm() {
     };
 
     return {
+        open,
+        setOpen,
+
         form,
         handleAddProject,
+        isLoading: addProjectMutation.isPending,
     };
 }

@@ -8,6 +8,8 @@ import { Job } from "bullmq";
 import { ProjectSyncQueueDto } from "./dto";
 import { GithubService } from "@/infrastructure/github/services";
 import { githubRepoResponseToProjectsEntity } from "@/infrastructure/github/mappers";
+import { EventEmitter2 } from "@nestjs/event-emitter";
+import { ProjectEvents } from "@/modules/project/events";
 
 @Processor(projectsQueueConfig.githubSync.name)
 export class ProjectsSyncQueueProcessor extends WorkerHost {
@@ -17,14 +19,13 @@ export class ProjectsSyncQueueProcessor extends WorkerHost {
         @InjectRepository(ProjectsEntity)
         private readonly projectsRepository: Repository<ProjectsEntity>,
         private readonly githubService: GithubService,
+        private readonly eventEmitter: EventEmitter2,
     ) {
         super();
     }
 
     async process(job: Job<ProjectSyncQueueDto>) {
         const { projectId, owner, name } = job.data;
-        this.logger.log(`Syncing project ${owner}/${name}...`);
-
         try {
             const repo = await this.githubService.getRepo({ owner, name });
 
@@ -37,12 +38,25 @@ export class ProjectsSyncQueueProcessor extends WorkerHost {
                 },
             );
 
+            this.eventEmitter.emit(
+                ProjectEvents.Update.name, {
+                    projectId,
+                    status: ProjectSyncStatus.SYNCED,
+                },
+            );
+
             this.logger.log(`Synced project ${owner}/${name}`);
         } catch(e) {
             this.logger.error(`Failed to sync project ${owner}/${name}: ${e.message}`);
             await this.projectsRepository.update(
                 projectId, {
                     syncStatus: ProjectSyncStatus.ERROR,
+                },
+            );
+            this.eventEmitter.emit(
+                ProjectEvents.Update.name, {
+                    projectId,
+                    status: ProjectSyncStatus.ERROR,
                 },
             );
         }

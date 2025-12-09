@@ -18,6 +18,7 @@ import { useAddProjectForm } from "@/features/project/hooks";
 import { Controller } from "react-hook-form";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { ComponentProps } from "react";
+import { Spinner } from "@/components/ui/spinner";
 
 export namespace AddProjectForm {
     export type Props = ComponentProps<"form">;
@@ -27,12 +28,16 @@ export const AddProjectForm = ({
     id = "add-project-form",
 }: AddProjectForm.Props) => {
     const {
+        open,
+        setOpen,
+
         form,
         handleAddProject,
+        isLoading,
     } = useAddProjectForm();
 
     return (
-        <Dialog>
+        <Dialog open={open} onOpenChange={setOpen}>
             <form
                 id={id}
                 onSubmit={form.handleSubmit(handleAddProject)}
@@ -88,6 +93,11 @@ export const AddProjectForm = ({
                             size={"lg"}
                             type={"submit"}
                         >
+                            {
+                                isLoading && (
+                                    <Spinner />
+                                )
+                            }
                             Save changes
                         </Button>
                     </DialogFooter>

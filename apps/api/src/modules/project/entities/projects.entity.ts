@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { UsersEntity } from "@/modules/user/entities";
 
 export enum ProjectSyncStatus {
@@ -48,6 +48,9 @@ export class ProjectsEntity {
         default: ProjectSyncStatus.PENDING,
     })
     syncStatus: ProjectSyncStatus;
+
+    @CreateDateColumn({ type: "timestamp" })
+    createdAt: Date;
 
     @Column()
     userId: string;

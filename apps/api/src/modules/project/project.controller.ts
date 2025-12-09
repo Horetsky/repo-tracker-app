@@ -1,16 +1,29 @@
-import { Body, Controller, Delete, Get, Param, Post, Query } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Post, Query, Sse } from "@nestjs/common";
 import { ProjectService } from "./project.service";
 import { AddProjectDto, GetProjectDto } from "@/modules/project/dto";
 import { Session } from "@/decorators";
 import { ServerSession } from "@/types";
 import { ResponseWithPaginationDto } from "@/dtos";
 import { ProjectsEntity } from "@/modules/project/entities";
+import { EventEmitter2 } from "@nestjs/event-emitter";
+import { fromEvent, map } from "rxjs";
+import { ProjectEvents } from "@/modules/project/events";
 
 @Controller("projects")
 export class ProjectController {
     constructor(
         private readonly projectService: ProjectService,
+        private readonly eventEmitter: EventEmitter2,
     ) {}
+
+    @Sse("sync")
+    syncProjectsStream() {
+        return fromEvent(this.eventEmitter, ProjectEvents.Update.name).pipe(
+            map((data) => {
+                return { data };
+            }),
+        );
+    }
 
     @Post()
     addProject(
