@@ -7,17 +7,35 @@ services:
       - .env.postgres
     volumes:
       - repo-tracker-postgres-data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
+    networks:
+      - data-net
 
   redis:
     container_name: repo-tracker-redis
     restart: always
     image: redis/redis-stack-server:latest
-    ports:
-      - "6379:6379"
     volumes:
       - repo-tracker-redis-data:/data
+    networks:
+      - data-net
+
+  api:
+    container_name: repo-tracker-api
+    restart: always
+    depends_on:
+      - postgres
+      - redis
+    env_file:
+      - .env.api
+    build:
+      context: .
+      dockerfile: ./apps/api/Dockerfile
+      args:
+        PACKAGE_NAME: api
+    ports:
+      - "3001:3001"
+    networks:
+      - data-net
 
 networks:
   data-net:
