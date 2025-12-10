@@ -41,7 +41,7 @@ Simply copy it to `.env`:
 cp .env.api.example .env.api
 
 # Database Config
-cp .env.postgress.example .env.postgress
+cp .env.postgres.example .env.postgres
 ```
 
 ### 2\. Run with Docker
