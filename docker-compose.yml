@@ -35,9 +35,28 @@ services:
     ports:
       - "3001:3001"
     networks:
+      - app-net
       - data-net
 
+  web:
+    container_name: repo-tracker-web
+    restart: always
+    depends_on:
+      - api
+    build:
+      context: .
+      dockerfile: ./apps/web/Dockerfile
+      args:
+        PACKAGE_NAME: web
+        NEXT_PUBLIC_API_URL: "http://localhost:3001/api"
+    ports:
+      - "3000:3000"
+    networks:
+      - app-net
+
 networks:
+  app-net:
+    driver: bridge
   data-net:
     driver: bridge
 

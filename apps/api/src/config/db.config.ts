@@ -15,9 +15,9 @@ const masterConnectionProvider: Provider = {
         password: configService.env("DB_PASSWORD"),
         database: configService.env("DB_NAME"),
         entities: [__dirname + "../../**/*.entity.{js,ts}"],
-        synchronize: true,
+        synchronize: !configService.isProduction,
         logging: false,
-        ssl: configService.isProduction,
+        ssl: false,
     }),
 };
 

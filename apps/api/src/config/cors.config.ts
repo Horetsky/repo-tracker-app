@@ -2,7 +2,7 @@ import { CorsOptions } from "@nestjs/common/interfaces/external/cors-options.int
 
 export default {
     origin: [
-        process.env.WEB_CLIENAT_PUBLIC_URL || "",
+        process.env.WEB_CLIENT_PUBLIC_URL || "",
     ],
     credentials: true,
 } satisfies CorsOptions;
