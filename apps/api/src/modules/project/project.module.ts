@@ -16,7 +16,7 @@ import { projectsQueueConfig, ProjectsSyncQueueProcessor, ProjectsSyncQueueProdu
             inject: [ConfigService],
             useFactory: (configService: ConfigService) => {
                 return {
-                    apiKey: configService.env("GITHUB_API_KEY"),
+                    apiKey: configService.optionalEnv("GITHUB_API_KEY"),
                 };
             },
         }),

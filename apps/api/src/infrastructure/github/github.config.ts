@@ -3,7 +3,7 @@ import { InjectionToken, ModuleMetadata, OptionalFactoryDependency } from "@nest
 export const GITHUB_MODULE_CONFIG = "GOOGLE_PLACES_MODULE_CONFIG";
 
 export type GithubModuleConfigOptions = {
-    apiKey: string;
+    apiKey?: string;
     baseUrl?: string
 };
 
@@ -14,11 +14,11 @@ export interface GithubModuleConfigAsyncOptions extends Pick<ModuleMetadata, "im
 
 
 export class GithubModuleConfig {
-    apiKey: string;
+    apiKey: string | undefined = undefined;
     baseUrl: string = "https://api.github.com";
 
     constructor(options: GithubModuleConfigOptions) {
-        this.apiKey = options.apiKey;
+        if(options.apiKey) this.apiKey = options.apiKey;
         if(options.baseUrl) this.baseUrl = options.baseUrl;
     }
 }

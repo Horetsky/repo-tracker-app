@@ -35,6 +35,12 @@ export class ConfigService {
         return process.env[key] as T;
     }
 
+    public optionalEnv<T = string>(key: typeof environmentVariables[number]): T | undefined {
+        const value = process.env[key] as T | undefined;
+        if(value === "") return undefined;
+        return value;
+    }
+
     get isProduction() {
         const mode = this.env("MODE");
         return mode === "PROD";
@@ -43,7 +49,7 @@ export class ConfigService {
     private ensureValues() {
         environmentVariables.forEach(item => {
             const value = process.env[item];
-            if(!value) throw new Error(`Config error: missing env.${item}`);
+            if(value === undefined) throw new Error(`Config error: missing env.${item}`);
         });
     }
 }

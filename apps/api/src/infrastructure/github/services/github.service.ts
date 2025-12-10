@@ -18,15 +18,18 @@ export class GithubService {
         try {
             const requestUrl = this.config.baseUrl + `/repos/${input.owner}/${input.name}`;
 
+            const headers: Record<string, string> = {
+                "Accept": "application/vnd.github+json",
+                "X-GitHub-Api-Version": "2022-11-28",
+            };
+
+            if(this.config.apiKey) {
+                headers["Authorization"] = `Bearer ${this.config.apiKey}`;
+            }
+
             const response$ = this.httpService.get<GithubRepoResponseDto>(
                 requestUrl,
-                {
-                    headers: {
-                        "Accept": "application/vnd.github+json",
-                        "Authorization": `Bearer ${this.config.apiKey}`,
-                        "X-GitHub-Api-Version": "2022-11-28",
-                    },
-                },
+                { headers },
             );
 
             const response = await firstValueFrom(response$);
