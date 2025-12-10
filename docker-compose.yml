@@ -1,4 +1,14 @@
 services:
+  nginx:
+    container_name: repo-tracker-nginx
+    restart: always
+    build:
+      context: ./apps/nginx
+    ports:
+      - "80:80"
+    networks:
+      - app-net
+
   postgres:
     container_name: repo-tracker-db
     restart: always
@@ -32,8 +42,6 @@ services:
       dockerfile: ./apps/api/Dockerfile
       args:
         PACKAGE_NAME: api
-    ports:
-      - "3001:3001"
     networks:
       - app-net
       - data-net
@@ -48,9 +56,7 @@ services:
       dockerfile: ./apps/web/Dockerfile
       args:
         PACKAGE_NAME: web
-        NEXT_PUBLIC_API_URL: "http://localhost:3001/api"
-    ports:
-      - "3000:3000"
+        NEXT_PUBLIC_API_URL: "/api"
     networks:
       - app-net
 
