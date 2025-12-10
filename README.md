@@ -1,135 +1,112 @@
-# Turborepo starter
+# GitHub Repo CRM
 
-This Turborepo starter is maintained by the Turborepo core team.
+A full-stack project designed to track, synchronize, and manage public GitHub repositories.
+Built with a focus on **scalable architecture** and **background processing**.
 
-## Using this example
 
-Run the following command:
 
-```sh
-npx create-turbo@latest
+## ✨ Key Features
+
+- **Secure Authentication:** JWT-based auth using **HTTP-only Cookies** strategy.
+- **Background Synchronization:** Heavy GitHub API tasks are offloaded to **Redis queues (BullMQ)**.
+- **Real-time Updates:** **Server-Sent Events (SSE)** provide live feedback on synchronization status.
+- **Dockerized:** Fully containerized environment (App, DB, Redis) with easy setup.
+- **Auto-Seeding:** Database is automatically populated with demo data on the first run.
+
+-----
+
+## 🛠 Tech Stack
+
+- **NestJS:** Chosen for its strict modular architecture and Dependency Injection, ensuring the backend is scalable.
+- **Next.js 16 (App Router):** Leveraged for **Server Components** and **Middleware** (secure server-side route protection via Cookies).
+- **BullMQ (Redis):** For handling GitHub API requests asynchronously without blocking the main thread.
+- **PostgreSQL:** Selected for relational data integrity (User <-> Projects).
+- **TanStack Query & Zustand:**
+    - **Query:** efficient server-state caching and optimistic updates.
+    - **Zustand:** lightweight client-state management.
+
+---
+
+## 🚀 Getting Started
+
+
+### 1. Environment Setup
+
+The project includes a `.env.example` file with all necessary default values for a quick start.
+
+Simply copy it to `.env`:
+
+```bash
+# API Config
+cp .env.api.example .env.api
+
+# Database Config
+cp .env.postgress.example .env.postgress
 ```
 
-## What's inside?
+### 2\. Run with Docker
 
-This Turborepo includes the following packages/apps:
+Build and start the entire system with a single command:
 
-### Apps and Packages
-
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
-
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
-
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build
-yarn dlx turbo build
-pnpm exec turbo build
+```bash
+docker-compose up -d --build
 ```
 
-You can build a specific package by using a [filter](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters):
+- **Backend:** `http://localhost:80/api`
+- **Frontend:** `http://localhost:80`
 
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build --filter=docs
+> **Note:** On the first launch, the `SeedService` will **automatically seed** the database with a test user (`test@example.com` / `password`) and popular repositories.
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build --filter=docs
-yarn exec turbo build --filter=docs
-pnpm exec turbo build --filter=docs
-```
+### 3\. Run Locally
 
-### Develop
+If you want to run apps individually:
 
-To develop all apps and packages, run the following command:
+```bash
+# Install dependencies
+pnpm install
 
-```
-cd my-turborepo
+# Start database & redis
+docker-compose up postgres redis -d
 
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev
+# Start Backend (Terminal 1)
+pnpm --filter api dev
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev
-yarn exec turbo dev
-pnpm exec turbo dev
+# Start Frontend (Terminal 2)
+pnpm --filter web dev
 ```
 
-You can develop a specific package by using a [filter](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters):
+-----
 
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev --filter=web
+## 📂 Project Structure
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev --filter=web
-yarn exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
-```
+### Backend (`apps/api`)
 
-### Remote Caching
-
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
-
-Turborepo can use a technique known as [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo login
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo login
-yarn exec turbo login
-pnpm exec turbo login
+```text
+src/
+├── config/             # Global configuration (DB, Redis, CORS)
+├── infrastructure/     # External services (GitHub API integration)
+├── lib/                # Shared types and helpers
+├── modules/
+│   ├── auth/           # JWT, Guards, Session decorators
+│   ├── user/           # User management
+│   ├── project/        # Core logic: CRUD, Queue Producers, Events
+│   ├── queue/          # BullMQ Processors (Workers)
+│   └── seed/           # Database seeding logic
+└── main.ts             # App bootstrap
 ```
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
+### Frontend (`apps/web`)
 
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
-
+```text
+src/
+├── app/
+│   ├── (auth)/         # Login/Signup routes (Auth Layout)
+│   ├── (main)/         # Dashboard routes (Protected Layout)
+│   └── api/            # Next.js API routes (if any)
+├── components/         # Shared UI components (shadcn/ui)
+├── features/           # Business logic grouped by domain
+│   ├── auth/           # Hooks, Queries, Schemas for Auth
+│   └── project/        # Hooks, Queries, Stores for Projects
+├── lib/                # Axios client, React Query setup
+└── middleware.ts       # Edge middleware for route protection
 ```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo link
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo link
-yarn exec turbo link
-pnpm exec turbo link
-```
-
-## Useful Links
-
-Learn more about the power of Turborepo:
-
-- [Tasks](https://turborepo.com/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.com/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.com/docs/reference/configuration)
-- [CLI Usage](https://turborepo.com/docs/reference/command-line-reference)
